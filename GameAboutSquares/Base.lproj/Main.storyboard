@@ -34,7 +34,7 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="JdR-X9-K7O"/>
                                 </connections>
                             </webView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FdQ-Wb-mIO" userLabel="BannerView">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FdQ-Wb-mIO" userLabel="BannerView" customClass="GADBannerView">
                                 <rect key="frame" x="140" y="550" width="320" height="50"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -68,6 +68,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="gaBannerView" destination="FdQ-Wb-mIO" id="VN8-pO-gn4"/>
                         <outlet property="gameWebView" destination="knd-PM-tyF" id="CTn-ro-KCM"/>
                         <outlet property="menuButton" destination="KEI-CO-qJj" id="qkx-W8-wW7"/>
                     </connections>

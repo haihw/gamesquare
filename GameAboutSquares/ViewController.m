@@ -8,12 +8,14 @@
 #define kGADBannerUnitID @"ca-app-pub-1931446035208028/5333497995"
 #define kGADInterstitialUnitID @"ca-app-pub-1931446035208028/8147363599"
 #import "ViewController.h"
+#import "JTSReachabilityResponder.h"
 @import GoogleMobileAds;
 @interface ViewController () <UIWebViewDelegate, GADBannerViewDelegate, GADInterstitialDelegate>
 {
     NSURLRequest *myOnlyOneRequest;
     IBOutlet GADBannerView *gaBannerView;
     GADInterstitial *interstitial;
+    BOOL networkWorking;
 }
 @property (strong, nonatomic) IBOutlet UIWebView *gameWebView;
 @property (strong, nonatomic) IBOutlet UIButton *menuButton;
@@ -25,6 +27,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    
+    [self reachabilitySetup];
 }
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
@@ -41,6 +45,16 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+- (void)reachabilitySetup {
+    JTSReachabilityResponder *responder = [[JTSReachabilityResponder alloc] initWithOptionalHostname:nil];
+    networkWorking = responder.isReachable;
+    [responder addHandler:^(JTSNetworkStatus status) {
+        // Respond to the value of "status"
+        networkWorking = status != NotReachable;
+    } forKey:@"MyReachabilityKey"];
+}
+
 - (IBAction)btnMenuTapped:(id)sender {
     NSLog(@"Show Menu");
     
@@ -48,7 +62,8 @@
     UIAlertAction *resetAction = [UIAlertAction actionWithTitle:@"Delete Saved Game Data" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
         NSString *jsString = @"localStorage.clear();";
         [_gameWebView stringByEvaluatingJavaScriptFromString:jsString];
-        [_gameWebView reload];
+        if (networkWorking)
+            [_gameWebView reload];
     }];
     
     UIAlertAction *unlockNextLevel = [UIAlertAction actionWithTitle:@"Unlock & Go To Next Level" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
@@ -60,7 +75,8 @@
 
         [_gameWebView stringByEvaluatingJavaScriptFromString:setValueJsString];
         [self showAd];
-        [_gameWebView reload];
+        if (networkWorking)
+            [_gameWebView reload];
         
     }];
     
